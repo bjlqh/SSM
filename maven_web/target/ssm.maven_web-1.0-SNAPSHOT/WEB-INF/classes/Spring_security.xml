@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--配置放行的资源-->
+    <security:http pattern="/login.jsp" security="none"></security:http>
+    <security:http pattern="/failer.jsp" security="none"></security:http>
+    <security:http pattern="/css/**" security="none"></security:http>
+    <security:http pattern="/img/**" security="none"></security:http>
+    <security:http pattern="/pages/**" security="none"></security:http>
+    <security:http pattern="/plugins/**" security="none"></security:http>
+    <!--
+     security:http针对请求做规则的配置节点
+     auto-config 表示使用默认配置
+     use-expressions 表示关闭框架的spel表达式
+     security:intercept-url 拦截的请求路径
+     pattern="/**"  拦截所有
+     access="ROLE_USER" 表示访问资源需要用户拥有ROLE_USER的权限
+    -->
+    <security:http auto-config="true" use-expressions="true">
+        <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER,ROLE_PRODUCT,ROLE_ORDER,ROLE_ADMIN')"></security:intercept-url>
+        <security:form-login login-processing-url="/login"
+                             default-target-url="/index.jsp"
+                             authentication-failure-url="/failer.jsp"
+                             login-page="/login.jsp"></security:form-login>
+        <security:logout logout-url="/logout" logout-success-url="/login.jsp"
+                         invalidate-session="true"></security:logout>
+        <!--权限不足的处理页面-->
+        <security:access-denied-handler error-page="/403.jsp"></security:access-denied-handler>
+        <!--关闭跨域的请求拦截-->
+        <security:csrf disabled="true"></security:csrf>
+    </security:http>
+
+
+    <security:authentication-manager>
+        <!---->
+        <security:authentication-provider user-service-ref="sysUserImpl">
+            <!--使用加盐算法-->
+            <security:password-encoder hash="bcrypt"></security:password-encoder>
+        </security:authentication-provider>
+    </security:authentication-manager>
+    <!--加密使用的类交给Spring管理-->
+    <bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+    <!--开启security权限拦截-->
+    <security:global-method-security secured-annotations="enabled"></security:global-method-security>
+</beans>

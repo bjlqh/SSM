@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--sql配置文件的约束 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lqh.dao.ISysLogDao">
+
+    <insert id="saveLog" parameterType="syslog">
+        insert into sys_log VALUES (common_sequence.nextval,#{visitTime},#{username},#{ip},#{method})
+    </insert>
+
+</mapper>

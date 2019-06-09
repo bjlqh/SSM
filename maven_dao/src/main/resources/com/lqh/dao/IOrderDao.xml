@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--sql配置文件的约束 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lqh.dao.IOrderDao">
+    <select id="findAllOrder" resultMap="rm">
+        select * from orders
+    </select>
+    <resultMap id="rm" type="orders">
+        <result column = "id" property = "id"></result>
+        <association property="product" javaType="Product" column="productId" select="com.lqh.dao.IProductDao.findById"
+                     fetchType="lazy"></association>
+    </resultMap>
+
+    <select id="findById" parameterType="int" resultType="orders">
+        select * from orders where id = #{id}
+    </select>
+
+    <insert id="saveOrder" parameterType="orders">
+        insert into orders(id,orderNum,orderTime,peopleCount,orderDesc,payType,orderStatus,productId)
+        values(orders_sequence.nextval,#{orderNum},#{orderTime},#{peopleCount},#{orderDesc},#{payType},#{orderStatus},#{product.id})
+    </insert>
+
+    <delete id="deleteOrderById" parameterType="int">
+        delete from orders where id =#{id}
+    </delete>
+
+    <update id="updateOrder" parameterType="orders">
+
+    </update>
+</mapper>

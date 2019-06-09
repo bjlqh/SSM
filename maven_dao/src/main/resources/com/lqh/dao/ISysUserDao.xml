@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--sql配置文件的约束 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lqh.dao.ISysUserDao">
+
+    <select id="findUserByName" resultMap="rm1" parameterType="String">
+          select * from sys_user where username = #{username}
+    </select>
+    <resultMap id="rm1" type="sysuser">
+        <result column="id" property="id"></result>
+        <collection property="list" column="id" javaType="List" ofType="sysrole"
+                    select="com.lqh.dao.ISysRoleDao.findRolesByUserId"></collection>
+    </resultMap>
+
+    <select id="findAllUser" resultType="sysuser">
+        select * from (select rownum r,s.* from sys_user s where rownum &lt;=#{param1}*#{param2})t
+            where t.r>(#{param1}-1)*#{param2}
+    </select>
+
+    <insert id="saveUser" parameterType="sysuser">
+        insert into sys_user VALUES (user_sequence.nextval,#{username},#{email},#{password},#{phoneNum},#{status})
+    </insert>
+
+    <select id="findUserById" parameterType="int" resultMap="rm">
+        select * from sys_user where id=#{id}
+    </select>
+    <resultMap id="rm" type="sysuser">
+        <result column="id" property="id"></result>
+        <collection property="list" column="id" javaType="List" ofType="sysrole"
+                    select="com.lqh.dao.ISysRoleDao.findRolesByUserId" fetchType="lazy"></collection>
+    </resultMap>
+
+    <insert id="addRoleToUser" parameterType="java.util.Map">
+        INSERT into sys_user_role VALUES (#{userId},#{roleId})
+    </insert>
+
+    <delete id="deleteRoleFromUser" parameterType="int">
+        delete from sys_user_role where userid=#{userid}
+    </delete>
+</mapper>

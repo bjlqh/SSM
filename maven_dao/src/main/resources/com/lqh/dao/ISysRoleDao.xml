@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--sql配置文件的约束 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lqh.dao.ISysRoleDao">
+
+    <select id="findAllRole" resultType="sysrole">
+        select * from sys_role
+    </select>
+
+    <select id="findRolesByUserId" parameterType="int" resultMap="rm1">
+        select * from sys_role  where id in (select roleid from sys_user_role where userid =#{userId})
+    </select>
+    <resultMap id="rm1" type="sysrole">
+        <result property="id" column="id"></result>
+        <collection property="permissions" javaType="List" ofType="Permission" select="com.lqh.dao.IPermissionDao.findPermissionById" column="id"></collection>
+    </resultMap>
+
+    <select id="findRoleById" parameterType="int" resultMap="rm">
+        select * from sys_role where id=#{id}
+    </select>
+    <resultMap id="rm" type="sysrole">
+        <result property="id" column="id"></result>
+        <collection property="permissions" column="id" javaType="List" ofType="permission" select="com.lqh.dao.IPermissionDao.findPermissionById" fetchType="lazy"></collection>
+    </resultMap>
+
+    <insert id="saveRole" parameterType="sysrole" >
+        insert into sys_role VALUES (common_sequence.nextval,#{roleName},#{roleDesc})
+    </insert>
+
+    <insert id="addPermissionToRole">
+        insert into sys_role_permission VALUES (#{param1},#{param2})
+    </insert>
+
+    <delete id="deletePermissionFromRole" parameterType="int">
+        delete from sys_role_permission where roleid=#{id}
+    </delete>
+
+    <update id="update">
+
+    </update>
+
+</mapper>

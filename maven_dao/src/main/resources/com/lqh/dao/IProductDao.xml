@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--sql配置文件的约束 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lqh.dao.IProductDao">
+    <!--id查询-->
+    <select id="findById" resultType="Product" parameterType="int">
+		select * from PRODUCT where id=#{id}
+	</select>
+    <select id="findAllPage" resultType="product">
+		select * from (select rownum r,p.* from product p where rownum &lt;=#{arg0}*#{arg1})t
+			where t.r>(#{arg0}-1)*#{arg1}
+	</select>
+	<select id="findAll" resultType="product">
+		select * from product
+	</select>
+	<select id="findCount" resultType="int">
+		select count(1) from product
+	</select>
+    <insert id="save" parameterType="product">
+		insert into PRODUCT values (common_sequence.nextval,#{productNum},#{productName},#{cityName},#{departureTime},#{productPrice},#{productDesc},#{productStatus})
+	</insert>
+
+    <update id="updateProduct" parameterType="product">
+		update product set productName=#{productName},cityName=#{cityName},departureTime=#{departureTime},productPrice=#{productPrice},productDesc=#{productDesc},productStatus=#{productStatus} where id=#{id}
+	</update>
+
+    <delete id="deleteProductById" parameterType="int">
+		delete from product where id=#{id}
+	</delete>
+</mapper>
